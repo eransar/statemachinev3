@@ -103,17 +103,36 @@ public  class On implements IState {
 
     public void FileRequest(Context context , int size) {
         if(((Download) on_substates.get(1)).getCurrentState() instanceof Idle){
-            if(size < context.getSpace()){
                 context.setDown(true);
                 System.out.println("exit idle state");
-
                 System.out.println("enter checkingspace state");
                 ((Download) on_substates.get(1)).setCurrentState(((Download) on_substates.get(1)).getDownload_substates().get(0));
+                if(size > context.getSpace()){
+                    try {
+                        Thread.sleep(4000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(size < context.getSpace()){
+                    if(context.isConnection()){
+                        this.updateSize(context,size);
+                        System.out.println("exit checkingspace state");
+                        System.out.println("enter download state");
+                        ((Download) on_substates.get(1)).setCurrentState(((Download) on_substates.get(1)).getDownload_substates().get(2));
+                    }
+                    else {
+                        System.out.println("exit checkingspace state");
+                        System.out.println("enter connection_wait state");
+                        ((Download) on_substates.get(1)).setCurrentState(((Download) on_substates.get(1)).getDownload_substates().get(1));
+                    }
 
-            }
-
+                }
         }
+
+
     }
+
 
     public void finish(Context context) {
 

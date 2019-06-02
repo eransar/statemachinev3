@@ -8,7 +8,8 @@ public class Main {
         context.setState(off);
         context.getState().turnOn(context);
         context.getState().internetOn(context);
-        context.getState().FileRequest(context,64);
+        context.setSpace(40);
+        context.getState().FileRequest(context,39);
         context.getState().DownloadAborted(context);
 
     }
