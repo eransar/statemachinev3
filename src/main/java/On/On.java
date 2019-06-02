@@ -105,6 +105,24 @@ public  class On implements IState {
     }
 
     public void movieOff(Context context) {
+        if (((MoviePlayer) on_substates.get(3)).getCurrentState() instanceof Play) {
+
+            System.out.println("exit play state");
+
+            System.out.println("enter idle state");
+            ((MoviePlayer) on_substates.get(3)).setCurrentState(((MoviePlayer) on_substates.get(3)).getMovieplayer_substates().get(0));
+
+
+        }
+        else if (((MoviePlayer) on_substates.get(3)).getCurrentState() instanceof Hold) {
+
+            System.out.println("exit hold state");
+
+            System.out.println("enter idle state");
+            ((MoviePlayer) on_substates.get(3)).setCurrentState(((MoviePlayer) on_substates.get(3)).getMovieplayer_substates().get(0));
+
+
+        }
 
     }
 
@@ -348,6 +366,14 @@ public  class On implements IState {
     }
 
     public void turnOff(Context context) {
+        if (context.isOn()) {
+            context.setDown(true);
+            System.out.println("exit on state");
+            System.out.println("enter off state");
+            context.setError(false);
+            context.setState(off);
+            context.setOn(false);
+        }
 
     }
 

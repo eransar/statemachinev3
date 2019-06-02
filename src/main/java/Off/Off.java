@@ -13,6 +13,7 @@ IState on;
     public void turnOn(Context context) {
         this.exitState();
         on.turnOn(context);
+        context.setOn(true);
 
     }
 
@@ -104,9 +105,7 @@ IState on;
 
     }
 
-    public void exitState() {
-        System.out.println("exit off");
-    }
+    public void exitState(){System.out.println("exit "+getClass().getSimpleName()+" state");}
 
     public void enterState() {
         System.out.println("entered off");

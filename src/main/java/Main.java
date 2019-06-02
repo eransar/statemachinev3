@@ -12,5 +12,6 @@ public class Main {
 //        context.getState().FileRequest(context,39);
 //        context.getState().downloadError(context);
         context.getState().movieOn(context);
+        context.getState().turnOff(context);
     }
 }
