@@ -151,9 +151,11 @@ public  class On implements IState {
     }
 
     public void internetOn(Context context) {
+
         for (IState state : on_substates){
             state.internetOn(context);
         }
+        this.CheckConnection(context);
 
     }
 
