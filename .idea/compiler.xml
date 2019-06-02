@@ -7,7 +7,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="machinestate" />
+        <module name="statemachinev3" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="statemachinev3" target="8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
