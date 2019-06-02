@@ -362,7 +362,7 @@ public  class On implements IState {
     }
 
     public void enterState() {
-        System.out.println("entered on");
+        System.out.println("enter on state");
     }
 
     public void turnOff(Context context) {
