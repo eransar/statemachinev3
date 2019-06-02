@@ -8,9 +8,9 @@ public class Main {
         context.setState(off);
         context.getState().turnOn(context);
         context.getState().internetOn(context);
-        context.setSpace(40);
-        context.getState().FileRequest(context,39);
-        context.getState().DownloadAborted(context);
-
+        context.getState().FileRequest(context,66);
+//        context.getState().FileRequest(context,39);
+//        context.getState().downloadError(context);
+        context.getState().movieOn(context);
     }
 }

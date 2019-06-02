@@ -2,16 +2,17 @@ package On;
 
 
 import On.Disk.Disk;
-import On.Download.CheckingSpace;
-import On.Download.ConnectionWait;
-import On.Download.Download;
-import On.Download.Idle;
+import On.Download.*;
 import On.InternetConnection.InternetConnection;
+import On.MoviePlayer.Hold;
+import On.MoviePlayer.MovieIdle ;
 import On.MoviePlayer.MoviePlayer;
+import On.MoviePlayer.Play;
 import On.User.User;
 import State.Context;
 import State.IState;
 
+import java.lang.Error;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,8 +41,45 @@ public  class On implements IState {
     public void resume(boolean error, boolean connect) {
 
     }
+    public void resume(Context context) {
+        if(((MoviePlayer) on_substates.get(3)).getCurrentState() instanceof Hold){
+            if(!context.isError() && context.isConnection()){
+                System.out.println("exit hold state ");
+
+                System.out.println("enter play state ");
+                ((MoviePlayer) on_substates.get(3)).setCurrentState(((MoviePlayer) on_substates.get(3)).getMovieplayer_substates().get(3));
+            }
+
+
+
+
+
+                System.out.println("enter initialize state");
+                ((MoviePlayer) on_substates.get(3)).setCurrentState(((MoviePlayer) on_substates.get(3)).getMovieplayer_substates().get(2));
+                System.out.println("exit initialize state");
+                System.out.println("enter play state");
+                ((MoviePlayer) on_substates.get(3)).setCurrentState(((MoviePlayer) on_substates.get(3)).getMovieplayer_substates().get(3));
+
+
+
+            }
+    }
 
     public void movieOn(Context context) {
+        if(((MoviePlayer) on_substates.get(3)).getCurrentState() instanceof MovieIdle){
+            if(context.isDown()){
+                System.out.println("exit idle state (movie player) state");
+
+                System.out.println("enter initialize state");
+                ((MoviePlayer) on_substates.get(3)).setCurrentState(((MoviePlayer) on_substates.get(3)).getMovieplayer_substates().get(2));
+                System.out.println("exit initialize state");
+                System.out.println("enter play state");
+                ((MoviePlayer) on_substates.get(3)).setCurrentState(((MoviePlayer) on_substates.get(3)).getMovieplayer_substates().get(3));
+
+
+
+            }
+        }
 
     }
 
@@ -50,6 +88,15 @@ public  class On implements IState {
     }
 
     public void holdMovie(Context context) {
+        if (((MoviePlayer) on_substates.get(3)).getCurrentState() instanceof Play) {
+
+            System.out.println("exit play state");
+
+            System.out.println("enter hold state");
+            ((MoviePlayer) on_substates.get(3)).setCurrentState(((MoviePlayer) on_substates.get(3)).getMovieplayer_substates().get(0));
+
+
+        }
 
     }
 
@@ -62,7 +109,15 @@ public  class On implements IState {
     }
 
     public void restartMovie(Context context) {
+        if (((MoviePlayer) on_substates.get(3)).getCurrentState() instanceof Play) {
 
+            System.out.println("exit play state");
+
+            System.out.println("enter initialize state");
+            ((MoviePlayer) on_substates.get(3)).setCurrentState(((MoviePlayer) on_substates.get(3)).getMovieplayer_substates().get(2));
+
+
+        }
     }
 
     public void checkingSpace(Context context, int size) {
@@ -101,7 +156,7 @@ public  class On implements IState {
             context.setDown(false);
 
         }
-        else if(((Download) on_substates.get(1)).getCurrentState() instanceof Download){
+        else if(((Download) on_substates.get(1)).getCurrentState() instanceof DownloadProgress){
             System.out.println("exit download state");
 
             System.out.println("enter idle state");
@@ -195,12 +250,13 @@ public  class On implements IState {
 
     }
     public void CheckConnection(Context context){
-        if(((Download) on_substates.get(1)).getCurrentState() instanceof Download){
+        if(((Download) on_substates.get(1)).getCurrentState() instanceof DownloadProgress){
             if(!context.isConnection()){
                 System.out.println("exit download state");
                 ((Download) on_substates.get(1)).setCurrentState(((Download) on_substates.get(1)).getDownload_substates().get(1));
                 System.out.println("enter connection_wait state");
                 download_history=((Download) on_substates.get(1)).getDownload_substates().get(2);
+                this.holdMovie(context);
             }
         }
         else if(((Download) on_substates.get(1)).getCurrentState() instanceof ConnectionWait){
@@ -209,6 +265,7 @@ public  class On implements IState {
 
                 ((Download) on_substates.get(1)).setCurrentState(download_history);
                 System.out.println("enter" +download_history.getClass().getSimpleName()+" state");
+
 
 
             }
@@ -245,18 +302,24 @@ public  class On implements IState {
     }
 
     public void downloadError(Context context) {
-        if (((Download) on_substates.get(1)).getCurrentState() instanceof Download) {
+        if (((Download) on_substates.get(1)).getCurrentState() instanceof DownloadProgress) {
             context.setDown(true);
             System.out.println("exit download state");
             System.out.println("enter error state");
             ((Download) on_substates.get(1)).setCurrentState(((Download) on_substates.get(1)).getDownload_substates().get(3));
             context.setError(true);
+            this.holdMovie(context);
         }
         try {
             Thread.sleep(3000);
             if(context.isError()){
                 context.setPoints(context.getPoints()-1);
                 context.setSpace(context.getSpace()+context.getSize());
+                System.out.println("enter idle state");
+                ((Download) on_substates.get(1)).setCurrentState(((Download) on_substates.get(1)).getDownload_substates().get(4));
+                context.setError(false);
+                context.setDown(false);
+                context.setPoints(context.getPoints()-1);
 
             }
         } catch (InterruptedException e) {

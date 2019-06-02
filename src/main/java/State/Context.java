@@ -15,6 +15,7 @@ public class Context{
     int size = 0;
     String status = "beginner";
     boolean error=false;
+    int percent = 0;
     HashMap<String,Double> statuslist = new HashMap<>();
 
     public Context(IState state ){

@@ -1,22 +1,10 @@
-package On.InternetConnection;
-
+package On.MoviePlayer;
 
 import State.Context;
 import State.IState;
 
-import java.util.ArrayList;
-import java.util.List;
+public class MovieIdle implements IState {
 
-
-public class InternetConnection implements IState {
-    List<IState> internet_substates;
-    public InternetConnection(){
-        internet_substates= new ArrayList<IState>() {{
-            add(new HaveConnection());
-            add(new NoConnection());
-        }};
-
-    }
 
     public void exitState() {
 
@@ -75,19 +63,11 @@ public class InternetConnection implements IState {
     }
 
     public void internetOn(Context context) {
-        if(!context.isConnection()){
-            System.out.println("exit noconnection state");
-            context.setConnection(true);
-            System.out.println("enter haveconnection state");
-        }
+
     }
 
     public void internetOff(Context context) {
-        if(context.isConnection()){
-            System.out.println("exit haveconnection state");
-            context.setConnection(false);
-            System.out.println("enter noconnection state");
-        }
+
     }
 
     public void when(Context context, int point) {

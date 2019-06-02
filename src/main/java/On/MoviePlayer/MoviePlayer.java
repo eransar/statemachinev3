@@ -7,13 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MoviePlayer implements IState {
-    List movieplayer_substates;
+    List<IState> movieplayer_substates;
+    IState CurrentState;
     public MoviePlayer(){
         movieplayer_substates= new ArrayList<IState>() {{
             add(new Hold());
-            add(new Idle());
+            add(new MovieIdle());
             add(new Initialize());
+            add(new Play());
         }};
+        this.CurrentState=movieplayer_substates.get(1);
     }
 
     public void exitState() {
@@ -114,5 +117,21 @@ public class MoviePlayer implements IState {
 
     public void downloadFixed(Context context) {
 
+    }
+
+    public List<IState> getMovieplayer_substates() {
+        return movieplayer_substates;
+    }
+
+    public void setMovieplayer_substates(List<IState> movieplayer_substates) {
+        this.movieplayer_substates = movieplayer_substates;
+    }
+
+    public IState getCurrentState() {
+        return CurrentState;
+    }
+
+    public void setCurrentState(IState currentState) {
+        CurrentState = currentState;
     }
 }
