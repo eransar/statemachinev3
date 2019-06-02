@@ -20,7 +20,7 @@ public class Main {
 
             switch (event){
                 case "turnOff":
-                    context.getState().turnOn(context);
+                    context.getState().turnOff(context);
                     break;
                 case "turnOn":
                     context.getState().turnOn(context);
