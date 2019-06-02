@@ -158,6 +158,14 @@ public  class On implements IState {
     }
 
     public void internetOff(Context context) {
+        if(context.isConnection()){
+        context.setConnection(false);
+            System.out.println("exit hasconnection state");
+            System.out.println("enter noconnection state");
+            context.setDown(false);
+            this.CheckConnection(context);
+
+        }
 
     }
 
