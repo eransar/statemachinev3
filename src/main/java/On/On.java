@@ -3,6 +3,7 @@ package On;
 
 import On.Disk.Disk;
 import On.Download.CheckingSpace;
+import On.Download.ConnectionWait;
 import On.Download.Download;
 import On.Download.Idle;
 import On.InternetConnection.InternetConnection;
@@ -17,6 +18,7 @@ import java.util.List;
 public  class On implements IState {
 
     IState off;
+    IState download_history;
     List<IState> on_substates;
     public On(IState off){
         this.off=off;
@@ -96,12 +98,45 @@ public  class On implements IState {
 
             System.out.println("enter idle state");
             ((Download) on_substates.get(1)).setCurrentState(((Download) on_substates.get(1)).getDownload_substates().get(4));
+            context.setDown(false);
 
         }
+        else if(((Download) on_substates.get(1)).getCurrentState() instanceof Download){
+            System.out.println("exit download state");
+
+            System.out.println("enter idle state");
+            ((Download) on_substates.get(1)).setCurrentState(((Download) on_substates.get(1)).getDownload_substates().get(4));
+            this.movieOff(context);
+
+
+
+        }
+        else if(((Download) on_substates.get(1)).getCurrentState() instanceof ConnectionWait){
+            System.out.println("exit connection_wait state");
+
+            System.out.println("enter idle state");
+            ((Download) on_substates.get(1)).setCurrentState(((Download) on_substates.get(1)).getDownload_substates().get(4));
+
+
+        }
+        else if(((Download) on_substates.get(1)).getCurrentState() instanceof Error){
+            System.out.println("exit error state");
+
+            System.out.println("enter idle state");
+            ((Download) on_substates.get(1)).setCurrentState(((Download) on_substates.get(1)).getDownload_substates().get(4));
+
+
+        }
+
+
+        context.setPoints(context.getPoints()-1);
+        context.setSpace(context.getSize()+context.getSpace());
+        context.setDown(false);
 
     }
 
     public void FileRequest(Context context , int size) {
+        context.setSize(size);
         if(((Download) on_substates.get(1)).getCurrentState() instanceof Idle){
                 context.setDown(true);
                 System.out.println("exit idle state");
@@ -120,12 +155,26 @@ public  class On implements IState {
                         System.out.println("exit checkingspace state");
                         System.out.println("enter download state");
                         ((Download) on_substates.get(1)).setCurrentState(((Download) on_substates.get(1)).getDownload_substates().get(2));
+                        context.setSpace(context.getSpace()-size);
+
                     }
                     else {
                         System.out.println("exit checkingspace state");
                         System.out.println("enter connection_wait state");
                         ((Download) on_substates.get(1)).setCurrentState(((Download) on_substates.get(1)).getDownload_substates().get(1));
+                        download_history=((Download) on_substates.get(1)).getDownload_substates().get(0);
                     }
+
+                }
+                else{
+                    if(context.getPoints()>0){
+                        context.setPoints(context.getPoints()-1);
+                    }
+                    System.out.println("exit checkingspace state");
+
+                    System.out.println("enter idle state");
+                    ((Download) on_substates.get(1)).setCurrentState(((Download) on_substates.get(1)).getDownload_substates().get(4));
+                    context.setDown(false);
 
                 }
         }
@@ -145,16 +194,85 @@ public  class On implements IState {
     public void CheckConnection(Context context, boolean connect) {
 
     }
+    public void CheckConnection(Context context){
+        if(((Download) on_substates.get(1)).getCurrentState() instanceof Download){
+            if(!context.isConnection()){
+                System.out.println("exit download state");
+                ((Download) on_substates.get(1)).setCurrentState(((Download) on_substates.get(1)).getDownload_substates().get(1));
+                System.out.println("enter connection_wait state");
+                download_history=((Download) on_substates.get(1)).getDownload_substates().get(2);
+            }
+        }
+        else if(((Download) on_substates.get(1)).getCurrentState() instanceof ConnectionWait){
+            if(context.isConnection()){
+                System.out.println("exit connection_wait state");
+
+                ((Download) on_substates.get(1)).setCurrentState(download_history);
+                System.out.println("enter" +download_history.getClass().getSimpleName()+" state");
+
+
+            }
+            else {
+
+            }
+        }
+
+
+    }
 
     public void getStatus(Context context) {
+
+        try {
+            System.out.println("exit download state");
+            Thread.sleep((context.getSize()/context.getStatuslist().get(context.getStatus()).intValue()));
+            System.out.println("enter download state");
+            context.setDown(true);
+            //then finish
+            this.movieOff(context);
+            System.out.println("exit download state");
+            ((Download) on_substates.get(1)).setCurrentState(((Download) on_substates.get(1)).getDownload_substates().get(4));
+            System.out.println("enter idle state");
+            context.setDown(false);
+
+
+
+        } catch (InterruptedException e) {
+
+        }
+
+
 
     }
 
     public void downloadError(Context context) {
+        if (((Download) on_substates.get(1)).getCurrentState() instanceof Download) {
+            context.setDown(true);
+            System.out.println("exit download state");
+            System.out.println("enter error state");
+            ((Download) on_substates.get(1)).setCurrentState(((Download) on_substates.get(1)).getDownload_substates().get(3));
+            context.setError(true);
+        }
+        try {
+            Thread.sleep(3000);
+            if(context.isError()){
+                context.setPoints(context.getPoints()-1);
+                context.setSpace(context.getSpace()+context.getSize());
+
+            }
+        } catch (InterruptedException e) {
+
+        }
 
     }
 
     public void downloadFixed(Context context) {
+        if (((Download) on_substates.get(1)).getCurrentState() instanceof Error) {
+            context.setDown(true);
+            System.out.println("exit error state");
+            System.out.println("enter download state");
+            ((Download) on_substates.get(1)).setCurrentState(((Download) on_substates.get(1)).getDownload_substates().get(3));
+            context.setError(false);
+        }
 
     }
 

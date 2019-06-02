@@ -1,5 +1,8 @@
 package State;
 
+import java.util.Dictionary;
+import java.util.HashMap;
+
 public class Context{
 
     IState state;
@@ -9,7 +12,17 @@ public class Context{
     int score = 0;
     boolean connection = false;
     int space = 100;
+    int size = 0;
+    String status = "beginner";
+    boolean error=false;
+    HashMap<String,Double> statuslist = new HashMap<>();
 
+    public Context(IState state ){
+        this.state=state;
+        statuslist.put("beginner",1.0);
+        statuslist.put("advanced",1.2);
+        statuslist.put("professional",1.5);
+    }
     public int getSpace() {
         return space;
     }
@@ -32,7 +45,17 @@ public class Context{
 
     public void setPoints(int points) {
         this.points = points;
-    }
+        if(this.points >=4 && this.points < 7){
+            this.status="advanced";
+
+        }
+        else if(this.points >= 7){
+            this.status="professional";
+        }
+        else
+            this.status="beginner";
+        }
+
 
     public boolean isOn() {
         return on;
@@ -58,9 +81,7 @@ public class Context{
         this.connection = connection;
     }
 
-    public Context(IState state ){
-        this.state=state;
-    }
+
     public Context(){
         this.state=null;
     }
@@ -69,7 +90,39 @@ public class Context{
         return state;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public HashMap<String, Double> getStatuslist() {
+        return statuslist;
+    }
+
+    public void setStatuslist(HashMap<String, Double> statuslist) {
+        this.statuslist = statuslist;
+    }
+
     public void setState(IState state) {
         this.state = state;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public boolean isError() {
+        return error;
+    }
+
+    public void setError(boolean error) {
+        this.error = error;
     }
 }
