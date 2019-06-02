@@ -43,6 +43,9 @@ public class Main {
                         System.out.println("Please enter a number");
                     }
                     break;
+                case "getStatus":
+                    context.getState().getStatus(context);
+                    break;
                 case "downloadAborted":
                     context.getState().DownloadAborted(context);
                     break;

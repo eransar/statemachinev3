@@ -85,6 +85,9 @@ public class Context{
 
     public Context(){
         this.state=null;
+        statuslist.put("beginner",1.0);
+        statuslist.put("advanced",1.2);
+        statuslist.put("professional",1.5);
     }
 
     public IState getState() {
